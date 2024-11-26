@@ -23,6 +23,10 @@ app.post('/register', async (req, res)=>{
     })
 })
 
+app.post('/test', (req, res) =>{
+    res.send('test')
+})
+
 app.listen(PORT, (error) =>{
     if(!error)
         console.log("The server is running on port " + PORT);
