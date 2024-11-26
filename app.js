@@ -38,7 +38,7 @@ app.post('/register', async (req, res) => {
                 return;
             }
 
-            res.json({ succes: true, error: null, duplicate: null });
+            res.json({ succes: true, error: null, duplicate: null, usedName: name, usedPhoneNumber: phoneNumber });
         });   
     });
 });
