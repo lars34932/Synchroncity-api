@@ -27,16 +27,17 @@ app.post('/register', async (req, res) => {
         const values = [name, phoneNumber];
 
         conn.query(insertQuery, values, (error, results, fields) => {
+            conn.end();
+
             if (error) {
                 res.json({ succes: false, error: error.stack, data: null });
                 return;
             }
-        });
 
-        conn.end();
-        res.json({ succes: true, error: null, data: null });
-    })
-})
+            res.json({ succes: true, error: null, data: null });
+        });   
+    });
+});
 
 app.post('/test', (req, res) => {
     res.send('test')
