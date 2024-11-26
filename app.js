@@ -17,27 +17,24 @@ app.post('/register', async (req, res) => {
         database: process.env.DB_NAME,
     });
 
-    conn.connect(err => {
-        if (err) {
-            console.error('Database connection failed:', err.stack);
+    conn.connect(error => {
+        if (error) {
+            res.json({ succes: false, error: error.stack, data: null });
             return;
         }
-
-        console.log('connection made!');
 
         const insertQuery = 'INSERT INTO users (name, phoneNumber) VALUES (?, ?)';
         const values = [name, phoneNumber];
 
         conn.query(insertQuery, values, (error, results, fields) => {
             if (error) {
-                console.error('Error inserting data:', error.stack);
+                res.json({ succes: false, error: error.stack, data: null });
                 return;
             }
-            console.log('Data inserted successfully:', results);
         });
 
         conn.end();
-        res.send('Signed up succesfully!');
+        res.json({ succes: true, error: null, data: null });
     })
 })
 
