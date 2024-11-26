@@ -10,10 +10,6 @@ app.post('/register', async (req, res)=>{
     const name = req.body.name;
     const phoneNumber = req.body.phoneNumber
 
-    console.log(process.env.DB_HOST)
-    console.log(process.env.DB_USER)
-    console.log(process.env.DB_PASSWORD)
-    console.log(process.env.DB_NAME)
     const conn = mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
