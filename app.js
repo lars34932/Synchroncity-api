@@ -28,7 +28,7 @@ app.post('/register', async (req, res) => {
         const insertQuery = 'INSERT INTO users (name, phoneNumber) VALUES (?, ?)';
         const values = [name, phoneNumber];
 
-        connection.query(insertQuery, values, (error, results, fields) => {
+        conn.query(insertQuery, values, (error, results, fields) => {
             if (error) {
                 console.error('Error inserting data:', error.stack);
                 return;
@@ -36,7 +36,7 @@ app.post('/register', async (req, res) => {
             console.log('Data inserted successfully:', results);
         });
 
-        connection.end();
+        conn.end();
         res.send('Signed up succesfully!');
     })
 })
