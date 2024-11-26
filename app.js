@@ -19,7 +19,7 @@ app.post('/register', async (req, res) => {
 
     conn.connect(error => {
         if (error) {
-            res.json({ succes: false, error: error.stack, data: null });
+            res.json({ succes: false, error: error.stack, duplicate: false });
             return;
         }
 
@@ -30,11 +30,15 @@ app.post('/register', async (req, res) => {
             conn.end();
 
             if (error) {
-                res.json({ succes: false, error: error.stack, data: null });
+                if (error.code === 'ER_DUP_ENTRY') {
+                    res.json({ success: false, error: 'Phone number already exists', duplicate: true, });
+                } else {
+                    res.json({ success: false, error: error.message, duplicate: null, });
+                }
                 return;
             }
 
-            res.json({ succes: true, error: null, data: null });
+            res.json({ succes: true, error: null, duplicate: null });
         });   
     });
 });
