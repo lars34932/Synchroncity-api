@@ -10,10 +10,10 @@ app.post('/register', async (req, res)=>{
     const name = req.body.name;
     const phoneNumber = req.body.phoneNumber
     const conn = mysql.createConnection({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
+        host: 'localhost',
+        user: 'synchron',
+        password: '',
+        database: 'synchroncity',
     });
 
     conn.connect(err => {
