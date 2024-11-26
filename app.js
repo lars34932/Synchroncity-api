@@ -3,23 +3,29 @@ const mysql = require('mysql2');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 app.use(express.json());
 app.post('/register', async (req, res)=>{
-    const db = mysql.createConnection({
+    const name = req.body.name;
+    const phoneNumber = req.body.phoneNumber
+    const conn = mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-      });
+    });
 
-    db.connect(err => {
+    conn.connect(err => {
         if(err) {
             console.error('Database connection failed:', err.stack);
             return;
         }
-        console.log("connected")
+        
+        const [result, fields] = conn.query('INSERT INTO user (name, phoneNumber) VALUES (?, ?)', [name, phoneNumber]);
+
+        console.log(result);
+        console.log(fields);
     })
 })
 
