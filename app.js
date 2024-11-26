@@ -6,7 +6,7 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-app.post('/register', async (req, res)=>{
+app.post('/register', async (req, res) => {
     const name = req.body.name;
     const phoneNumber = req.body.phoneNumber
 
@@ -18,21 +18,35 @@ app.post('/register', async (req, res)=>{
     });
 
     conn.connect(err => {
-        if(err) {
+        if (err) {
             console.error('Database connection failed:', err.stack);
             return;
         }
-        
+
         console.log('connection made!');
+
+        const insertQuery = 'INSERT INTO users (name, phoneNumber) VALUES (?, ?)';
+        const values = [name, phoneNumber];
+
+        connection.query(insertQuery, values, (error, results, fields) => {
+            if (error) {
+                console.error('Error inserting data:', error.stack);
+                return;
+            }
+            console.log('Data inserted successfully:', results);
+        });
+
+        connection.end();
+        res.send('Signed up succesfully!');
     })
 })
 
-app.post('/test', (req, res) =>{
+app.post('/test', (req, res) => {
     res.send('test')
 })
 
-app.listen(PORT, '0.0.0.0', (error) =>{
-    if(!error)
+app.listen(PORT, '0.0.0.0', (error) => {
+    if (!error)
         console.log("The server is running on port " + PORT);
     else
         console.log("Error occurred, server can't start", error)
