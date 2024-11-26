@@ -10,10 +10,10 @@ app.post('/register', async (req, res)=>{
     const name = req.body.name;
     const phoneNumber = req.body.phoneNumber
     const conn = mysql.createConnection({
-        host: 'localhost',
-        user: 'synchron',
-        password: '',
-        database: 'synchroncity',
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
     });
 
     conn.connect(err => {
@@ -22,10 +22,7 @@ app.post('/register', async (req, res)=>{
             return;
         }
         
-        const [result, fields] = conn.query('INSERT INTO user (name, phoneNumber) VALUES (?, ?)', [name, phoneNumber]);
-
-        console.log(result);
-        console.log(fields);
+        console.log('connection made!');
     })
 })
 
