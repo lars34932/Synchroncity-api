@@ -27,10 +27,9 @@ app.post('/test', (req, res) =>{
     res.send('test')
 })
 
-app.listen(PORT, (error) =>{
+app.listen(PORT, '0.0.0.0', (error) =>{
     if(!error)
         console.log("The server is running on port " + PORT);
     else
         console.log("Error occurred, server can't start", error)
-    }
-);
+});
