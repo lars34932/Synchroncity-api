@@ -37,8 +37,9 @@ app.post('/register', async (req, res) => {
                 }
                 return;
             }
-            
-            res.json({ succes: true, error: null, duplicate: null, usedName: name, usedPhoneNumber: phoneNumber, usedUserId: results.insertId });
+
+            const userId = results.insertId.toString();
+            res.json({ succes: true, error: null, duplicate: null, usedName: name, usedPhoneNumber: phoneNumber, usedUserId: userId });
         });   
     });
 });
