@@ -5,17 +5,17 @@ require('dotenv').config();
 const app = express();
 const PORT = 3000;
 
+const conn = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+});
+
 app.use(express.json());
 app.post('/register', async (req, res) => {
     const name = req.body.name;
     const phoneNumber = req.body.phoneNumber
-
-    const conn = mysql.createConnection({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-    });
 
     conn.connect(error => {
         if (error) {
@@ -44,8 +44,36 @@ app.post('/register', async (req, res) => {
     });
 });
 
+app.post('/thought', async (req, res) => {
+    const userId = req.body.user;
+    const type = req.body.type
+    const time = req.body.time;
+    const value = req.body.value;
+
+    conn.connect(error => {
+        if (error) {
+            res.json({ succes: false, error: error.stack });
+            return;
+        }
+
+        const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value) VALUES (?, ?, ?, ?)';
+        const values = [userId, type, time, value];
+
+        conn.query(insertQuery, values, (error, results, fields) => {
+            conn.end();
+
+            if (error) {
+                res.json({ success: false, error: error.message });
+                return;
+            }
+
+            res.json({ succes: true, error: null })
+        });   
+    });
+});
+
 app.post('/test', (req, res) => {
-    res.send('test')
+    res.send('succes');
 })
 
 app.listen(PORT, '0.0.0.0', (error) => {
