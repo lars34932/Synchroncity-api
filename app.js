@@ -105,7 +105,7 @@ app.post('/user', async (req, res) => {
     const values = [userId];
 
     conn.query(insertQuery, values, (error, results, fields) => {
-        console.log(results[0]['name']);
+        res.json({ succes: true, result: results[0]['name'] });
     });
 });
 
