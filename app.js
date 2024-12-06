@@ -83,7 +83,7 @@ app.post('/matches', async (req, res) => {
         }
     });
 
-    const insertQuery = 'SELECT * FROM user_thoughts WHERE user_id = ?';
+    const insertQuery = 'SELECT * FROM user_thoughts WHERE user_id = ? ORDER BY time DESC';
     const values = [userId];
 
     conn.query(insertQuery, values, (error, results, fields) => {
