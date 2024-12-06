@@ -73,6 +73,27 @@ app.post('/thought', async (req, res) => {
     });
 });
 
+app.post('/matches', async (req, res) => {
+    const userId = 53;
+
+    conn.connect(error => {
+        if (error) {
+            res.json({ succes: false, error: error.stack });
+            return;
+        }
+    });
+
+    const insertQuery = 'SELECT * FROM user_thoughts WHERE user_id = ?';
+    const values = [userId];
+
+    conn.query(insertQuery, values, (error, results, fields) => {
+
+        console.log(results);
+
+        res.json({ succes: true, result: results });
+    });
+});
+
 app.listen(PORT, '0.0.0.0', (error) => {
     if (!error)
         console.log("The server is running on port " + PORT);
