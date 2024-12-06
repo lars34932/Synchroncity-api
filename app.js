@@ -74,7 +74,7 @@ app.post('/thought', async (req, res) => {
 });
 
 app.post('/matches', async (req, res) => {
-    const userId = 53;
+    const userId = req.body.user;
 
     conn.connect(error => {
         if (error) {
