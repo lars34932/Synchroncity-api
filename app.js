@@ -87,9 +87,6 @@ app.post('/matches', async (req, res) => {
     const values = [userId];
 
     conn.query(insertQuery, values, (error, results, fields) => {
-
-        console.log(results);
-
         res.json({ succes: true, result: results });
     });
 });
