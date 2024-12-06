@@ -5,80 +5,58 @@ require('dotenv').config();
 const app = express();
 const PORT = 3000;
 
-const conn = mysql.createConnection({
+const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
 });
 
 app.use(express.json());
-app.post('/register', async (req, res) => {
-    const name = req.body.name;
-    const phoneNumber = req.body.phoneNumber
+app.post('/register', (req, res) => {
+    const { name, phoneNumber } = req.body;
 
-    conn.connect(error => {
+    const insertQuery = 'INSERT INTO users (name, phoneNumber) VALUES (?, ?)';
+    const values = [name, phoneNumber];
+
+    pool.query(insertQuery, values, (error, results) => {
         if (error) {
-            res.json({ succes: false, error: error.stack, duplicate: false });
+            if (error.code === 'ER_DUP_ENTRY') {
+                res.json({ success: false, error: 'Phone number already exists', duplicate: true });
+            } else {
+                res.json({ success: false, error: error.message, duplicate: null });
+            }
             return;
         }
 
-        const insertQuery = 'INSERT INTO users (name, phoneNumber) VALUES (?, ?)';
-        const values = [name, phoneNumber];
-
-        conn.query(insertQuery, values, (error, results, fields) => {
-            conn.end();
-
-            if (error) {
-                if (error.code === 'ER_DUP_ENTRY') {
-                    res.json({ success: false, error: 'Phone number already exists', duplicate: true, });
-                } else {
-                    res.json({ success: false, error: error.message, duplicate: null, });
-                }
-                return;
-            }
-
-            const userId = results.insertId.toString();
-            res.json({ succes: true, error: null, duplicate: null, usedName: name, usedPhoneNumber: phoneNumber, usedUserId: userId });
-        });   
+        const userId = results.insertId.toString();
+        res.json({ success: true, error: null, duplicate: null, usedName: name, usedPhoneNumber: phoneNumber, usedUserId: userId });
     });
 });
 
-app.post('/thought', async (req, res) => {
-    const userId = req.body.user;
-    const type = req.body.type
-    const time = req.body.time;
-    const value = req.body.value;
+app.post('/thought', (req, res) => {
+    const { user, type, time, value } = req.body;
 
-    conn.connect(error => {
+    const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value) VALUES (?, ?, ?, ?)';
+    const values = [user, type, time, value];
+
+    pool.query(insertQuery, values, (error, results) => {
         if (error) {
-            res.json({ succes: false, error: error.stack });
+            res.json({ success: false, error: error.message });
             return;
         }
 
-        const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value) VALUES (?, ?, ?, ?)';
-        const values = [userId, type, time, value];
-
-        conn.query(insertQuery, values, (error, results, fields) => {
-            conn.end();
-
-            if (error) {
-                res.json({ success: false, error: error.message });
-                return;
-            }
-
-            res.json({ succes: true, error: null })
-        });   
+        res.json({ success: true, error: null });
     });
 });
-
-app.post('/test', (req, res) => {
-    res.send('succes');
-})
 
 app.listen(PORT, '0.0.0.0', (error) => {
-    if (!error)
-        console.log("The server is running on port " + PORT);
-    else
-        console.log("Error occurred, server can't start", error)
+    if (!error) {
+        console.log(`The server is running on port ${PORT}`);
+    } else {
+        console.log("Error occurred, server can't start", error);
+    }
 });
