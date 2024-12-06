@@ -91,6 +91,24 @@ app.post('/matches', async (req, res) => {
     });
 });
 
+app.post('/user', async (req, res) => {
+    const userId = req.body.user;
+
+    conn.connect(error => {
+        if (error) {
+            res.json({ succes: false, error: error.stack });
+            return;
+        }
+    });
+
+    const insertQuery = 'SELECT * FROM users WHERE id = ?';
+    const values = [userId];
+
+    conn.query(insertQuery, values, (error, results, fields) => {
+        console.log(results);
+    });
+});
+
 app.listen(PORT, '0.0.0.0', (error) => {
     if (!error)
         console.log("The server is running on port " + PORT);
