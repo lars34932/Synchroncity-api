@@ -68,21 +68,31 @@ app.post('/thought', async (req, res) => {
 
             for (let i = 0; i < results.length; i++) {;
                 if (value == results[i]['value']) {
-                    if (userId == results[i]['user_id']) {
-                        console.log('matched with urself');
-                    } else {
-                        console.log(results[i]['user_id']);
+                    if (userId !== results[i]['user_id']) {
                         console.log('matched');
+
+                        const insertQuery3 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
+                        const values3 = [userId, type, time, value, true, results[i]['user_id']];
+
+                        conn.query(insertQuery3, values3 , (error, results, fields) => {
+
+                            if (error) {
+                                res.json({ success: false, error: error.message });
+                                return;
+                            }
+
+                            res.json({ succes: true, error: null });
+                        })
                         break;
-                    }  
+                    }
                 }
             }
         });
 
-        const insertQuery2 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value) VALUES (?, ?, ?, ?)';
-        const values2 = [userId, type, time, value];
+        const insertQuery3 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, ) VALUES (?, ?, ?, ?)';
+        const values3 = [userId, type, time, value];
 
-        conn.query(insertQuery2, values2, (error, results, fields) => {
+        conn.query(insertQuery3, values3, (error, results, fields) => {
 
             if (error) {
                 res.json({ success: false, error: error.message });
