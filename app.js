@@ -66,9 +66,10 @@ app.post('/thought', async (req, res) => {
                 return;
             }
 
-            for (let i = 0; i < results.length; i++) {
-                console.log('value: ' + value)
-                console.log(results[i]['value']);
+            for (let i = 0; i < results.length; i++) {;
+                if (value == results[i]['value']) {
+                    console.log('matched')
+                }
             }
         });
 
