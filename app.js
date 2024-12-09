@@ -47,79 +47,34 @@ app.post('/register', async (req, res) => {
 });
 
 app.post('/thought', async (req, res) => {
-    const userId = req.body.user;
-    const type = req.body.type
-    const time = req.body.time;
-    const value = req.body.value;
+    const { user: userId, type, time, value } = req.body;
 
-    conn.connect(error => {
-        if (error) {
-            res.json({ succes: false, error: error.stack });
-            return;
+    try {
+        const [recentThoughts] = await conn.promise().query('SELECT * FROM user_thoughts ORDER BY thoughtTime DESC');
+
+        let matchedUserId = null;
+        for (const thought of recentThoughts) {
+            if (thought.value === value && thought.user_id !== userId) {
+                matchedUserId = thought.user_id;
+                break;
+            }
         }
 
-        const insertQuery = 'SELECT * FROM user_thoughts ORDER BY time DESC';
-
-        conn.query(insertQuery, (error, results, fields) => {
-            if (error) {
-                res.json({ success: false, error: error.message });
-                return;
-            }
-
-            for (let i = 0; i < results.length; i++) {;
-                if (value == results[i]['value']) {
-                    if (userId !== results[i]['user_id']) {
-                        console.log('matched');
-
-                        const insertQuery3 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
-                        const values3 = [userId, type, time, value, true, results[i]['user_id']];
-
-                        conn.query(insertQuery3, values3 , (error, results, fields) => {
-
-                            if (error) {
-                                res.json({ success: false, error: error.message });
-                                return;
-                            }
-
-                            res.json({ succes: true, error: null });
-                        })
-                        break;
-                    }
-                }
-            }
-        });
-
-        const insertQuery3 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, ) VALUES (?, ?, ?, ?)';
-        const values3 = [userId, type, time, value];
-
-        conn.query(insertQuery3, values3, (error, results, fields) => {
-
-            if (error) {
-                res.json({ success: false, error: error.message });
-                return;
-            }
-
-            res.json({ succes: true, error: null });
-        });   
-    });
-});
-
-app.post('/matches', async (req, res) => {
-    const userId = req.body.user;
-
-    conn.connect(error => {
-        if (error) {
-            res.json({ succes: false, error: error.stack });
-            return;
+        if (matchedUserId) {
+            const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
+            const values = [userId, type, time, value, true, matchedUserId];
+            await conn.promise().query(insertQuery, values);
+            return res.json({ success: true, matched: true });
         }
-    });
 
-    const insertQuery = 'SELECT * FROM user_thoughts WHERE user_id = ? ORDER BY time DESC';
-    const values = [userId];
+        const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
+        const values = [userId, type, time, value, false, null];
+        await conn.promise().query(insertQuery, values);
 
-    conn.query(insertQuery, values, (error, results, fields) => {
-        res.json({ succes: true, result: results });
-    });
+        res.json({ success: true, matched: false });
+    } catch (error) {
+        res.json({ success: false, error: error.message });
+    }
 });
 
 app.post('/user', async (req, res) => {
