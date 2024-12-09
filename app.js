@@ -67,6 +67,7 @@ app.post('/thought', async (req, res) => {
             }
 
             for (let i = 0; i < results.length; i++) {
+                console.log('value: ' + value)
                 console.log(results[i]['value']);
             }
         });
