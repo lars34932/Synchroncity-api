@@ -67,8 +67,6 @@ app.post('/thought', async (req, res) => {
             }
 
             console.log(results);
-
-            res.json({ succes: true, error: null });
         });
 
         const insertQuery2 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value) VALUES (?, ?, ?, ?)';
