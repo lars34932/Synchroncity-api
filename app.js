@@ -58,7 +58,7 @@ app.post('/thought', async (req, res) => {
             return;
         }
 
-        const insertQuery = 'SELECT * FROM user_thoughts';
+        const insertQuery = 'SELECT * FROM user_thoughts ORDER BY time DESC';
 
         conn.query(insertQuery, (error, results, fields) => {
             if (error) {
@@ -68,7 +68,10 @@ app.post('/thought', async (req, res) => {
 
             for (let i = 0; i < results.length; i++) {;
                 if (value == results[i]['value']) {
-                    console.log('matched')
+                    console.log(results[i]['user_id']);
+                    console.log('matched');
+                    
+                    break;
                 }
             }
         });
