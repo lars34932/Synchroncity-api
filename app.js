@@ -58,10 +58,21 @@ app.post('/thought', async (req, res) => {
             return;
         }
 
-        const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value) VALUES (?, ?, ?, ?)';
-        const values = [userId, type, time, value];
+        const insertQuery = 'SELECT * FROM user_thoughts';
 
-        conn.query(insertQuery, values, (error, results, fields) => {
+        conn.query(insertQuery, (error, results, fields) => {
+            if (error) {
+                res.json({ success: false, error: error.message });
+                return;
+            }
+
+            console.log(results);
+        });
+
+        const insertQuery2 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value) VALUES (?, ?, ?, ?)';
+        const values2 = [userId, type, time, value];
+
+        conn.query(insertQuery2, values2, (error, results, fields) => {
 
             if (error) {
                 res.json({ success: false, error: error.message });
