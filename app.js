@@ -48,11 +48,9 @@ app.post('/register', async (req, res) => {
 
 app.post('/thought', async (req, res) => {
     const userId = req.body.user;
-    const type = req.body.type
+    const type = req.body.type;
     const time = req.body.time;
     const value = req.body.value;
-    let result;
-    let inserted = false;
 
     conn.connect(error => {
         if (error) {
@@ -61,59 +59,56 @@ app.post('/thought', async (req, res) => {
             return;
         }
 
-        const insertQuery = 'SELECT * FROM user_thoughts WHERE value = ? ORDER BY time DESC';
-        const values = [value];
+        const selectQuery = 'SELECT * FROM user_thoughts WHERE value = ? ORDER BY time DESC';
+        const selectValues = [value];
 
-        console.log('Running query:', insertQuery, 'with values:', values);
+        console.log('Running query:', selectQuery, 'with values:', selectValues);
 
-        conn.query(insertQuery, values, (error, results, fields) => {
+        conn.query(selectQuery, selectValues, (error, results) => {
             if (error) {
                 console.log('Query Error:', error.message);
                 res.json({ success: false, error: error.message });
                 return;
             }
-    
+
             console.log('Query Results:', results);
-            res.json({ success: true, data: results });
-        });
-        
-        console.log(result);
 
-        for (let i = 0; i < result.length; i++) {
-            if (userId !== result[i]['user_id']) {
-                console.log('matched');
+            let inserted = false;
 
-                const insertQuery3 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
-                const values3 = [userId, type, time, value, true, result[i]['user_id']];
+            for (let i = 0; i < results.length; i++) {
+                if (userId !== results[i]['user_id']) {
+                    console.log('Matched user ID:', results[i]['user_id']);
 
-                conn.query(insertQuery3, values3, (error, results, fields) => {
+                    const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
+                    const insertValues = [userId, type, time, value, true, results[i]['user_id']];
 
+                    conn.query(insertQuery, insertValues, (error) => {
+                        if (error) {
+                            res.json({ success: false, error: error.message });
+                            return;
+                        }
+
+                        res.json({ success: true, error: null });
+                    });
+                    inserted = true;
+                    return;
+                }
+            }
+
+            if (!inserted) {
+                const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value) VALUES (?, ?, ?, ?)';
+                const insertValues = [userId, type, time, value];
+
+                conn.query(insertQuery, insertValues, (error) => {
                     if (error) {
                         res.json({ success: false, error: error.message });
                         return;
                     }
 
-                    res.json({ succes: true, error: null });
-                })
-                inserted = true;
-                break;
+                    res.json({ success: true, error: null });
+                });
             }
-        }
-
-        if (inserted == false) {
-            const insertQuery3 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, ) VALUES (?, ?, ?, ?)';
-            const values3 = [userId, type, time, value];
-    
-            conn.query(insertQuery3, values3, (error, results, fields) => {
-    
-                if (error) {
-                    res.json({ success: false, error: error.message });
-                    return;
-                }
-    
-                res.json({ succes: true, error: null });
-            });
-        }
+        });
     });
 });
 
