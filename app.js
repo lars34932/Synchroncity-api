@@ -78,12 +78,7 @@ app.post('/thought', async (req, res) => {
             for (let i = 0; i < results.length; i++) {
                 const result = results[i];
 
-                console.log(userId);
-                console.log(result['user_id']);
-
-                console.log(result['matched']);
-
-                if (userId !== result['user_id'] && result['matched'] === 0) {
+                if (Number(userId) !== Number(result['user_id']) && result['matched'] === 0) {
                     console.log(`Matched user ID: ${result['user_id']} with value: ${result['value']}`);
 
                     const insertQuery = `
