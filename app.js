@@ -75,13 +75,18 @@ app.post('/thought', async (req, res) => {
 
             let inserted = false;
 
+            // Check for conditions and perform matching logic
             for (let i = 0; i < results.length; i++) {
                 const result = results[i];
 
                 if (userId !== result['user_id'] && result['matched'] === 0) {
                     console.log(`Matched user ID: ${result['user_id']} with value: ${result['value']}`);
 
-                    const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
+                    const insertQuery = `
+                        INSERT INTO user_thoughts 
+                        (user_id, type, thoughtTime, value, matched, matched_user_id) 
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    `;
                     const insertValues = [userId, type, time, value, true, result['user_id']];
 
                     conn.query(insertQuery, insertValues, (error) => {
@@ -93,10 +98,11 @@ app.post('/thought', async (req, res) => {
                         res.json({ success: true, message: "Matched and inserted successfully", error: null });
                     });
                     inserted = true;
-                    return;
+                    return; // Exit to avoid multiple responses
                 }
             }
 
+            // If no match found, insert without matching
             if (!inserted) {
                 const insertQuery = `
                     INSERT INTO user_thoughts 
