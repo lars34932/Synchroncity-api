@@ -72,6 +72,8 @@ app.post('/thought', async (req, res) => {
             result = results;
         });
         
+        console.log(result);
+
         for (let i = 0; i < result.length; i++) {
             if (userId !== result[i]['user_id']) {
                 console.log('matched');
