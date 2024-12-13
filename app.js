@@ -71,21 +71,13 @@ app.post('/thought', async (req, res) => {
                 return;
             }
 
-            console.log('Query Results:', results);
-
             let inserted = false;
 
             for (let i = 0; i < results.length; i++) {
                 const result = results[i];
 
                 if (Number(userId) !== Number(result['user_id']) && result['matched'] === 0) {
-                    console.log(`Matched user ID: ${result['user_id']} with value: ${result['value']}`);
-
-                    const insertQuery = `
-                        INSERT INTO user_thoughts 
-                        (user_id, type, thoughtTime, value, matched, matched_user_id) 
-                        VALUES (?, ?, ?, ?, ?, ?)
-                    `;
+                    const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
                     const insertValues = [userId, type, time, value, true, result['user_id']];
 
                     conn.query(insertQuery, insertValues, (error) => {
@@ -96,18 +88,26 @@ app.post('/thought', async (req, res) => {
 
                         res.json({ success: true, message: "Matched and inserted successfully", error: null });
                     });
+
+                    const insertQuery2 = 'UPDATE user_thoughts SET matched = ?, matched_user_id = ? WHERE id = ?';
+                    const insertValues2 = [true, userId, result['id']];
+
+                    conn.query(insertQuery2, insertValues2, (error) => {
+                        if (error) {
+                            res.json({ success: false, error: error.message });
+                            return;
+                        }
+
+                        res.json({ success: true, message: "Matched and inserted successfully", error: null });
+                    });
                     inserted = true;
-                    return; // Exit to avoid multiple responses
+
+                    return;
                 }
             }
 
-            // If no match found, insert without matching
             if (!inserted) {
-                const insertQuery = `
-                    INSERT INTO user_thoughts 
-                    (user_id, type, thoughtTime, value, matched, matched_user_id) 
-                    VALUES (?, ?, ?, ?, ?, ?)
-                `;
+                const insertQuery = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
                 const insertValues = [userId, type, time, value, false, null];
 
                 conn.query(insertQuery, insertValues, (error) => {
