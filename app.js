@@ -50,7 +50,7 @@ app.post('/thought', async (req, res) => {
     const userId = req.body.user;
     const type = req.body.type;
     const time = req.body.time;
-    const value = req.body.value;
+    const value = req.body.value.toLowerCase();
 
     conn.connect(error => {
         if (error) {
