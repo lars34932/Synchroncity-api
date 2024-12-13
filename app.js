@@ -55,7 +55,9 @@ app.post('/thought', async (req, res) => {
     let inserted = false;
 
     conn.connect(error => {
+        console.log('test function');
         if (error) {
+            console.log('error');
             res.json({ succes: false, error: error.stack });
             return;
         }
