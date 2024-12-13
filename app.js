@@ -97,8 +97,6 @@ app.post('/thought', async (req, res) => {
                             res.json({ success: false, error: error.message });
                             return;
                         }
-
-                        res.json({ success: true, message: "Matched and inserted successfully", error: null });
                     });
                     inserted = true;
 
