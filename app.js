@@ -42,7 +42,7 @@ app.post('/register', async (req, res) => {
 
             const userId = results.insertId.toString();
             res.json({ succes: true, error: null, duplicate: null, usedName: name, usedPhoneNumber: phoneNumber, usedUserId: userId });
-        });   
+        });
     });
 });
 
@@ -51,6 +51,8 @@ app.post('/thought', async (req, res) => {
     const type = req.body.type
     const time = req.body.time;
     const value = req.body.value;
+    let result;
+    let inserted = false;
 
     conn.connect(error => {
         if (error) {
@@ -67,39 +69,44 @@ app.post('/thought', async (req, res) => {
                 return;
             }
 
-            for (let i = 0; i < results.length; i++) {;
-                    if (userId !== results[i]['user_id']) {
-                        console.log('matched');
-
-                        // const insertQuery3 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
-                        // const values3 = [userId, type, time, value, true, results[i]['user_id']];
-
-                        // conn.query(insertQuery3, values3, (error, results, fields) => {
-
-                        //     if (error) {
-                        //         res.json({ success: false, error: error.message });
-                        //         return;
-                        //     }
-
-                        //     res.json({ succes: true, error: null });
-                        // })
-                        break;
-                    }
-            }
+            result = results;
         });
+        
+        for (let i = 0; i < result.length; i++) {
+            if (userId !== result[i]['user_id']) {
+                console.log('matched');
 
-        const insertQuery3 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, ) VALUES (?, ?, ?, ?)';
-        const values3 = [userId, type, time, value];
+                const insertQuery3 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, matched, matched_user_id) VALUES (?, ?, ?, ?, ?, ?)';
+                const values3 = [userId, type, time, value, true, result[i]['user_id']];
 
-        conn.query(insertQuery3, values3, (error, results, fields) => {
+                conn.query(insertQuery3, values3, (error, results, fields) => {
 
-            if (error) {
-                res.json({ success: false, error: error.message });
-                return;
+                    if (error) {
+                        res.json({ success: false, error: error.message });
+                        return;
+                    }
+
+                    res.json({ succes: true, error: null });
+                })
+                inserted = true;
+                break;
             }
+        }
 
-            res.json({ succes: true, error: null });
-        });   
+        if (inserted == false) {
+            const insertQuery3 = 'INSERT INTO user_thoughts (user_id, type, thoughtTime, value, ) VALUES (?, ?, ?, ?)';
+            const values3 = [userId, type, time, value];
+    
+            conn.query(insertQuery3, values3, (error, results, fields) => {
+    
+                if (error) {
+                    res.json({ success: false, error: error.message });
+                    return;
+                }
+    
+                res.json({ succes: true, error: null });
+            });
+        }
     });
 });
 
