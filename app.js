@@ -54,7 +54,6 @@ app.post('/thought', async (req, res) => {
 
     conn.connect(error => {
         if (error) {
-            console.log('Connection Error:', error.stack);
             res.json({ success: false, error: error.stack });
             return;
         }
@@ -62,11 +61,8 @@ app.post('/thought', async (req, res) => {
         const selectQuery = 'SELECT * FROM user_thoughts WHERE value = ? ORDER BY time DESC';
         const selectValues = [value];
 
-        console.log('Running query:', selectQuery, 'with values:', selectValues);
-
         conn.query(selectQuery, selectValues, (error, results) => {
             if (error) {
-                console.log('Query Error:', error.message);
                 res.json({ success: false, error: error.message });
                 return;
             }
