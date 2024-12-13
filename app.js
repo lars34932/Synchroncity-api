@@ -55,26 +55,26 @@ app.post('/thought', async (req, res) => {
     let inserted = false;
 
     conn.connect(error => {
-        console.log('test function');
         if (error) {
-            console.log('error');
-            res.json({ succes: false, error: error.stack });
+            console.log('Connection Error:', error.stack);
+            res.json({ success: false, error: error.stack });
             return;
         }
 
         const insertQuery = 'SELECT * FROM user_thoughts WHERE value = ? ORDER BY time DESC';
         const values = [value];
 
+        console.log('Running query:', insertQuery, 'with values:', values);
+
         conn.query(insertQuery, values, (error, results, fields) => {
-            console.log('test');
             if (error) {
+                console.log('Query Error:', error.message);
                 res.json({ success: false, error: error.message });
                 return;
             }
-
-            console.log("test");
-            console.log(results);
-            result = results;
+    
+            console.log('Query Results:', results);
+            res.json({ success: true, data: results });
         });
         
         console.log(result);
