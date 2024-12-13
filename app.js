@@ -64,6 +64,7 @@ app.post('/thought', async (req, res) => {
         const values = [value];
 
         conn.query(insertQuery, values, (error, results, fields) => {
+            console.log('test');
             if (error) {
                 res.json({ success: false, error: error.message });
                 return;
