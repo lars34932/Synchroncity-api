@@ -69,6 +69,8 @@ app.post('/thought', async (req, res) => {
                 return;
             }
 
+            console.log("test");
+            console.log(results);
             result = results;
         });
         
