@@ -18,6 +18,8 @@ const conn = mysql.createConnection({
 app.use(express.json());
 app.post('/register', async (req, res) => {
     const name = req.body.name;
+    const password = req.body.password;
+    const email = red.body.email;
     const phoneNumber = req.body.phoneNumber
 
     conn.connect(error => {
@@ -26,14 +28,14 @@ app.post('/register', async (req, res) => {
             return;
         }
 
-        const insertQuery = 'INSERT INTO users (name, phoneNumber) VALUES (?, ?)';
-        const values = [name, phoneNumber];
+        const insertQuery = 'INSERT INTO users (name, password, email, phoneNumber) VALUES (?, ?, ?, ?)';
+        const values = [name, password, email, phoneNumber];
 
         conn.query(insertQuery, values, (error, results, fields) => {
 
             if (error) {
                 if (error.code === 'ER_DUP_ENTRY') {
-                    res.json({ success: false, error: 'Phone number already exists', duplicate: true, });
+                    res.json({ success: false, error: 'Email or phone number already exists', duplicate: true, });
                 } else {
                     res.json({ success: false, error: error.message, duplicate: null, });
                 }
@@ -41,7 +43,7 @@ app.post('/register', async (req, res) => {
             }
 
             const userId = results.insertId.toString();
-            res.json({ succes: true, error: null, duplicate: null, usedName: name, usedPhoneNumber: phoneNumber, usedUserId: userId });
+            res.json({ succes: true, error: null, duplicate: null, usedName: name, usedEmail: email, usedPhoneNumber: phoneNumber, usedUserId: userId });
         });
     });
 });
