@@ -143,7 +143,7 @@ app.post('/matches', async (req, res) => {
 
     conn.connect(error => {
         if (error) {
-            res.json({ succes: false, error: error.stack });
+            res.json({ success: false, error: error.stack });
             return;
         }
     });
@@ -152,7 +152,7 @@ app.post('/matches', async (req, res) => {
     const values = [userId];
 
     conn.query(insertQuery, values, (error, results, fields) => {
-        res.json({ succes: true, result: results });
+        res.json({ success: true, result: results });
     });
 });
 
@@ -161,7 +161,7 @@ app.post('/user', async (req, res) => {
 
     conn.connect(error => {
         if (error) {
-            res.json({ succes: false, error: error.stack });
+            res.json({ success: false, error: error.stack });
             return;
         }
     });
@@ -170,7 +170,7 @@ app.post('/user', async (req, res) => {
     const values = [userId];
 
     conn.query(insertQuery, values, (error, results, fields) => {
-        res.json({ succes: true, result: results[0]['name'] });
+        res.json({ success: true, result: results[0]['name'] });
     });
 });
 
