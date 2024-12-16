@@ -19,7 +19,7 @@ app.use(express.json());
 app.post('/register', async (req, res) => {
     const name = req.body.name;
     const password = req.body.password;
-    const email = red.body.email;
+    const email = req.body.email;
     const phoneNumber = req.body.phoneNumber
 
     conn.connect(error => {
