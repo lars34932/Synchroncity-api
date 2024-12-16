@@ -1,6 +1,5 @@
 const express = require('express');
 const mysql = require('mysql2');
-const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -18,7 +17,7 @@ const conn = mysql.createConnection({
 
 app.use(express.json());
 app.post('/login', async (req, res) => {
-    
+
 })
 
 app.post('/register', async (req, res) => {
