@@ -20,30 +20,49 @@ app.post('/register', async (req, res) => {
     const name = req.body.name;
     const password = req.body.password;
     const email = req.body.email;
-    const phoneNumber = req.body.phoneNumber
+    const phoneNumber = req.body.phoneNumber;
+    const salt = req.body.salt;
+    console.log('pass: ' + password);
+    console.log('salt: ' + salt);
 
     conn.connect(error => {
         if (error) {
-            res.json({ succes: false, error: error.stack, duplicate: false });
+            res.json({ success: false, error: error.stack, duplicate: false });
             return;
         }
 
-        const insertQuery = 'INSERT INTO users (name, password, email, phoneNumber) VALUES (?, ?, ?, ?)';
-        const values = [name, password, email, phoneNumber];
+        const insertQuery = 'INSERT INTO users (name, password, salt, email, phoneNumber) VALUES (?, ?, ?, ?, ?)';
+        const values = [name, password, salt, email, phoneNumber];
 
         conn.query(insertQuery, values, (error, results, fields) => {
 
             if (error) {
                 if (error.code === 'ER_DUP_ENTRY') {
-                    res.json({ success: false, error: 'Email or phone number already exists', duplicate: true, });
+                    res.json({
+                        success: false,
+                        error: 'Email or phone number already exists',
+                        duplicate: true,
+                    });
                 } else {
-                    res.json({ success: false, error: error.message, duplicate: null, });
+                    res.json({
+                        success: false,
+                        error: error.message,
+                        duplicate: null,
+                    });
                 }
                 return;
             }
 
             const userId = results.insertId.toString();
-            res.json({ succes: true, error: null, duplicate: null, usedName: name, usedEmail: email, usedPhoneNumber: phoneNumber, usedUserId: userId });
+            res.json({
+                success: true,
+                error: null,
+                duplicate: null,
+                usedName: name,
+                usedEmail: email,
+                usedPhoneNumber: phoneNumber,
+                usedUserId: userId,
+            });
         });
     });
 });
