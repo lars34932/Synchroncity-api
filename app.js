@@ -17,7 +17,26 @@ const conn = mysql.createConnection({
 
 app.use(express.json());
 app.post('/login', async (req, res) => {
+    const email = req.body.email;
 
+    conn.connect(error => {
+        if (error) {
+            res.json({ success: false, error: error.stack });
+            return;
+        }
+
+        const insertQuery = 'SELECT * FROM users WHERE email = ?';
+        const values = [email];
+
+        conn.query(insertQuery, values, (error, results, fields) => {
+            if (error) {
+                res.json({ success: false, error: error.message });
+                return;
+            }
+            
+            console.log(results);
+        });
+    });
 })
 
 app.post('/register', async (req, res) => {
