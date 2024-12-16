@@ -33,8 +33,8 @@ app.post('/login', async (req, res) => {
                 res.json({ success: false, error: error.message });
                 return;
             }
-            console.log(results.password);
-            console.log(results.salt);
+            console.log(results[0]['salt']);
+            console.log(results[0]['password']);
 
             res.json({ success: true, hash: results.password, salt: results.salt, error: null });
         });
