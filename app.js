@@ -34,7 +34,7 @@ app.post('/login', async (req, res) => {
                 return;
             }
 
-            res.json({ success: true, hash: results[0]['password'], salt: results[0]['salt'], error: null });
+            res.json({ success: true, hash: results[0]['password'], salt: results[0]['salt'], usedName: results[0]['name'], usedEmail: results[0]['email'], usedPhoneNumber: results[0]['phoneNumber'], usedUserId: results[0]['id'] ,error: null });
         });
     });
 })
